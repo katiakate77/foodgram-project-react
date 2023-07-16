@@ -19,3 +19,17 @@ class Ingredient(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Tag(models.Model):
+    name = models.CharField('Название', max_length=200, unique=True)
+    color = models.CharField('Цветовой HEX-код', max_length=7, unique=True)
+    slug = models.SlugField('Slug', max_length=200, unique=True)
+
+    class Meta:
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
+        ordering = ('id',)
+
+    def __str__(self):
+        return self.name
