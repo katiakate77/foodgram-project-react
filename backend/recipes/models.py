@@ -1,4 +1,5 @@
 from django.db import models
+from users.models import User
 
 
 class Ingredient(models.Model):
@@ -33,3 +34,55 @@ class Tag(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Recipe(models.Model):
+    tags = models.ManyToManyField(
+        Tag,
+        related_name='recipes',
+        verbose_name='Список тегов'
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='recipes',
+        verbose_name='Автор рецепта'
+    )
+    ingredients = models.ManyToManyField(
+        Ingredient,
+        through='RecipeIngredient',
+        related_name='recipes',
+        verbose_name='Список ингредиентов'
+    )
+    name = models.CharField(
+        'Название',
+        max_length=200
+    )
+    image = models.ImageField(
+        'Image',
+        upload_to='recipes/'
+    )
+    text = models.TextField(
+        'Описание'
+    )
+    cooking_time = models.PositiveIntegerField(
+        'Время приготовления (в минутах)'
+    )
+
+    class Meta:
+        verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
+
+
+class RecipeIngredient(models.Model):
+    recipe = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE, related_name='recipeingredient')
+    ingredient = models.ForeignKey(
+        Ingredient, on_delete=models.CASCADE, related_name='recipeingredient')
+
+    class Meta:
+        verbose_name = 'Ингредиент в рецепте'
+        verbose_name_plural = 'Ингредиенты в рецептах'
+
+    def __str__(self):
+        return f'{self.ingredient} принадлежит рецепту {self.recipe}'
