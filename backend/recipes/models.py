@@ -59,7 +59,7 @@ class Recipe(models.Model):
         max_length=200
     )
     image = models.ImageField(
-        'Image',
+        'Картинка',
         upload_to='recipes/images/'
     )
     text = models.TextField(
@@ -79,9 +79,17 @@ class Recipe(models.Model):
 
 class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(
-        Recipe, on_delete=models.CASCADE, related_name='recipeingredient')
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='recipeingredient',
+        verbose_name='Рецепт'
+    )
     ingredient = models.ForeignKey(
-        Ingredient, on_delete=models.CASCADE, related_name='recipeingredient')
+        Ingredient,
+        on_delete=models.CASCADE,
+        related_name='recipeingredient',
+        verbose_name='Ингредиент'
+    )
 
     class Meta:
         verbose_name = 'Ингредиент в рецепте'
@@ -89,3 +97,47 @@ class RecipeIngredient(models.Model):
 
     def __str__(self):
         return f'{self.ingredient} принадлежит рецепту {self.recipe}'
+
+
+class FavoriteRecipe(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='favoriterecipe',
+        verbose_name='Пользователь, который добавляет рецепт в избранное'
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='favoriterecipe',
+        verbose_name='Рецепт, который добавляют в избранное'
+    )
+
+    class Meta:
+        verbose_name = 'Избранное'
+        verbose_name_plural = 'Избранное'
+
+    def __str__(self):
+        return f'{self.user} добавил {self.recipe} в избранное'
+
+
+class ShoppingCart(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='shoppingcart',
+        verbose_name='Пользователь, который добавляет рецепт в список покупок'
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='shoppingcart',
+        verbose_name='Рецепт, который добавляют в список покупок'
+    )
+
+    class Meta:
+        verbose_name = 'Список покупок'
+        verbose_name_plural = 'Список покупок'
+
+    def __str__(self):
+        return f'{self.user} добавил {self.recipe} в список покупок'
