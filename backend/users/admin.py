@@ -12,4 +12,8 @@ class UserAdmin(admin.ModelAdmin):
     list_filter = ('username', 'email')
 
 
-admin.site.register(Follow)
+@admin.register(Follow)
+class FollowAdmin(admin.ModelAdmin):
+    list_display = (
+        'id', 'user', 'author'
+    )
