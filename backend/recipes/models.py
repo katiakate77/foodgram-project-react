@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator
 from django.db import models
 from users.models import User
 
@@ -18,8 +19,11 @@ class Ingredient(models.Model):
         verbose_name_plural = 'Ингредиенты'
         ordering = ('id',)
 
+    def get_ingredient(self):
+        return f'{self.name}, {self.measurement_unit}'
+
     def __str__(self):
-        return self.name
+        return self.get_ingredient()
 
 
 class Tag(models.Model):
@@ -89,6 +93,14 @@ class RecipeIngredient(models.Model):
         on_delete=models.CASCADE,
         related_name='recipeingredient',
         verbose_name='Ингредиент'
+    )
+    amount = models.PositiveIntegerField(
+        verbose_name='Количество',
+        validators=[
+            MinValueValidator(
+                1, 'Количество ингредиента должно быть положительным числом'
+            )
+        ]
     )
 
     class Meta:
