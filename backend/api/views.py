@@ -2,9 +2,9 @@ from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from api.serializers import UserSerializer
+from api.serializers import UserSerializer, TagSerializer, IngredientSerializer
 
-from recipes.models import Recipe
+from recipes.models import Recipe, Tag, Ingredient
 from users.models import User
 
 
@@ -43,6 +43,16 @@ class UserViewSet(viewsets.ModelViewSet):
     )
     def subscribe(self, request):
         ...
+
+
+class TagViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+
+
+class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientSerializer
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
