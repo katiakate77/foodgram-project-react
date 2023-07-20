@@ -2,7 +2,10 @@ from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from api.serializers import UserSerializer, TagSerializer, IngredientSerializer
+from api.serializers import (
+    UserSerializer, TagSerializer,
+    IngredientSerializer, RecipeIngredientSerializer
+    )
 
 from recipes.models import Recipe, Tag, Ingredient
 from users.models import User
@@ -57,7 +60,7 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 
 class RecipeViewSet(viewsets.ModelViewSet):
     http_method_names = ('get', 'post', 'patch', 'delete')
-    ...
+    queryset = Recipe.objects.all()
 
     @action(
         detail=True,
