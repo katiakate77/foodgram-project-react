@@ -20,9 +20,15 @@ class UserViewSet(ListCreateRetrieveViewSet):
             return UserCreateSerializer
         return UserSerializer
 
+    def get_permissions(self):
+        if self.action == 'retrieve':
+            return (permissions.IsAuthenticated(),)
+        return super().get_permissions()
+
     @action(
         detail=False,
         serializer_class=UserSerializer,
+        permission_classes=(permissions.IsAuthenticated,)
     )
     def me(self, request):
         serializer = self.get_serializer(request.user)

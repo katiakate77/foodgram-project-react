@@ -1,4 +1,3 @@
-from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 
 from recipes.models import Ingredient, Tag, RecipeIngredient
@@ -22,7 +21,6 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(max_length=150, write_only=True)
 
     class Meta:
         model = User
@@ -31,11 +29,12 @@ class UserCreateSerializer(serializers.ModelSerializer):
             'first_name', 'last_name',
             'password'
         )
-        # extra_kwargs = {'password': {'write_only': True}}
+        extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
-        validated_data['password'] = make_password(validated_data['password'])
-        user = User.objects.create(**validated_data)
+        user = User(**validated_data)
+        user.set_password(validated_data['password'])
+        user.save()
         return user
 
 
