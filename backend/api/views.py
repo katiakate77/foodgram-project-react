@@ -3,8 +3,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from api.serializers import (
-    UserSerializer, UserCreateSerializer, TagSerializer,
-    IngredientSerializer, RecipeIngredientSerializer
+    UserSerializer, UserCreateSerializer, ResetPasswordSerializer,
+    TagSerializer, IngredientSerializer, RecipeIngredientSerializer
     )
 
 from api.mixins import ListCreateRetrieveViewSet
@@ -16,6 +16,8 @@ class UserViewSet(ListCreateRetrieveViewSet):
     queryset = User.objects.all()
 
     def get_serializer_class(self):
+        if self.action == 'set_password':
+            return ResetPasswordSerializer
         if self.action == 'create':
             return UserCreateSerializer
         return UserSerializer
@@ -37,10 +39,18 @@ class UserViewSet(ListCreateRetrieveViewSet):
     @action(
         detail=False,
         methods=('post',),
-        serializer_class=...,
+        permission_classes=(permissions.IsAuthenticated,)
     )
     def set_password(self, request):
-        ...
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            new_password = serializer.validated_data.get('new_password')
+            self.request.user.set_password(new_password)
+            self.request.user.save()
+            return Response(
+                {'status': 'password set'}, status=status.HTTP_200_OK
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @action(
         detail=False,

@@ -1,3 +1,4 @@
+from djoser.serializers import SetPasswordSerializer
 from rest_framework import serializers
 
 from recipes.models import Ingredient, Tag, RecipeIngredient
@@ -15,10 +16,11 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
     def get_is_subscribed(self, obj):
-        request = self.context.get('request')
-        if request.user.is_anonymous:
-            return False
-        return obj.following.filter(user=request.user).exists()
+        user = self.context.get('request').user
+        return (
+            user.is_authenticated and
+            obj.following.filter(user=user).exists()
+        )
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
@@ -37,6 +39,10 @@ class UserCreateSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+
+
+class ResetPasswordSerializer(SetPasswordSerializer):
+    pass
 
 
 class TagSerializer(serializers.ModelSerializer):
