@@ -1,20 +1,24 @@
-from rest_framework import permissions, status, viewsets
+from rest_framework import mixins, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from api.serializers import (
-    UserSerializer, TagSerializer,
+    UserSerializer, UserCreateSerializer, TagSerializer,
     IngredientSerializer, RecipeIngredientSerializer
     )
 
+from api.mixins import ListCreateRetrieveViewSet
 from recipes.models import Recipe, Tag, Ingredient
 from users.models import User
 
 
-class UserViewSet(viewsets.ModelViewSet):
-    http_method_names = ('get', 'post')
+class UserViewSet(ListCreateRetrieveViewSet):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return UserCreateSerializer
+        return UserSerializer
 
     @action(
         detail=False,

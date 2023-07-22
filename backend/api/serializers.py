@@ -1,3 +1,4 @@
+from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 
 from recipes.models import Ingredient, Tag, RecipeIngredient
@@ -5,12 +6,37 @@ from users.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
+    is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
-        fields = (
-            'email', 'id', 'username', 'first_name', 'last_name', 'password'
-        )
         model = User
+        fields = (
+            'email', 'id', 'username',
+            'first_name', 'last_name', 'is_subscribed'
+        )
+
+    def get_is_subscribed(self, obj):
+        # user = self.context.get('request').user
+        # return obj.following.filter(user=user).exists()
+        ...
+
+
+class UserCreateSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(max_length=150, write_only=True)
+
+    class Meta:
+        model = User
+        fields = (
+            'email', 'id', 'username',
+            'first_name', 'last_name',
+            'password'
+        )
+        # extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        validated_data['password'] = make_password(validated_data['password'])
+        user = User.objects.create(**validated_data)
+        return user
 
 
 class TagSerializer(serializers.ModelSerializer):
