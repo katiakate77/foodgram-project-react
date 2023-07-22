@@ -4,6 +4,7 @@ from rest_framework.response import Response
 
 from api.serializers import (
     UserSerializer, UserCreateSerializer, ResetPasswordSerializer,
+    SubscriptionSerializer,
     TagSerializer, IngredientSerializer, RecipeIngredientSerializer
     )
 
@@ -48,13 +49,13 @@ class UserViewSet(ListCreateRetrieveViewSet):
             self.request.user.set_password(new_password)
             self.request.user.save()
             return Response(
-                {'status': 'password set'}, status=status.HTTP_200_OK
+                {'status': 'password set'}, status=status.HTTP_204_NO_CONTENT
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @action(
         detail=False,
-        serializer_class=...,
+        # permission_classes=(permissions.IsAuthenticated,)
     )
     def subscriptions(self, request):
         ...

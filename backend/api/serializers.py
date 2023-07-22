@@ -45,6 +45,38 @@ class ResetPasswordSerializer(SetPasswordSerializer):
     pass
 
 
+class SubscriptionSerializer(UserSerializer):
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = '__all__'
+
+    def get_recipes(self, obj):
+        ...
+
+    def get_recipes_count(self, obj):
+        ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class TagSerializer(serializers.ModelSerializer):
 
     class Meta:
