@@ -5,8 +5,8 @@ from rest_framework.response import Response
 
 from api.serializers import (
     UserSerializer, UserCreateSerializer, ResetPasswordSerializer,
-    SubscriptionSerializer, RecipeSerializer, RecipeCreateUpdateSerializer,
-    TagSerializer, IngredientSerializer, RecipeIngredientSerializer
+    RecipeSerializer, RecipeCreateUpdateSerializer,
+    TagSerializer, IngredientSerializer, SubscriptionSerializer
     )
 
 from api.mixins import ListCreateRetrieveViewSet
@@ -93,6 +93,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if self.action not in ('list', 'retrieve'):
             return (permissions.IsAuthenticated(),)
         return super().get_permissions()
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(author=self.request.user)
 
     @action(
         detail=True,

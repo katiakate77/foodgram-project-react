@@ -79,8 +79,8 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
-    '''Ингредиенты конкретного рецепта.'''
-    id = serializers.ReadOnlyField(source='ingredient.id')
+    '''Ингредиенты конкретного рецепта для GET-запросов.'''
+
     name = serializers.ReadOnlyField(source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(
         source='ingredient.measurement_unit')
@@ -88,6 +88,14 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecipeIngredient
         fields = ('id', 'name', 'measurement_unit', 'amount')
+
+
+class RecipeIngredientShortSerializer(serializers.ModelSerializer):
+    '''Ингредиенты конкретного рецепта для POST- и PATCH-запросов.'''
+
+    class Meta:
+        model = RecipeIngredient
+        fields = ('id', 'amount',)
 
 
 class Base64ImageField(serializers.ImageField):
@@ -127,4 +135,11 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
-    pass
+
+    def create(self, validated_data):
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('recipeingredient')
+        recipe = Recipe.objects.create(**validated_data)
+        recipe.tags.set(tags)
+        self.set_recipe_ingredients(recipe, ingredients)
+        return recipe
