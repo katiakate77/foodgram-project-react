@@ -1,6 +1,8 @@
 import base64
 import mimetypes
 
+from django.shortcuts import get_object_or_404
+
 from django.core.files.base import ContentFile
 from djoser.serializers import SetPasswordSerializer
 from rest_framework import serializers
@@ -93,9 +95,18 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
 class RecipeIngredientShortSerializer(serializers.ModelSerializer):
     '''Ингредиенты конкретного рецепта для POST- и PATCH-запросов.'''
 
+    id = serializers.PrimaryKeyRelatedField(
+        source='ingredient', queryset=Ingredient.objects.all())
+
     class Meta:
         model = RecipeIngredient
-        fields = ('id', 'amount',)
+        fields = ('id', 'amount')
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['name'] = instance.ingredient.name
+        data['measurement_unit'] = instance.ingredient.measurement_unit
+        return data
 
 
 class Base64ImageField(serializers.ImageField):
@@ -110,7 +121,7 @@ class Base64ImageField(serializers.ImageField):
 
 
 class RecipeSerializer(serializers.ModelSerializer):
-    tags = TagSerializer(many=True)
+    tags = TagSerializer(many=True, read_only=True)
     author = UserSerializer(read_only=True)
     ingredients = RecipeIngredientSerializer(
         many=True,
@@ -135,11 +146,64 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
+    tags = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Tag.objects.all())
+    ingredients = RecipeIngredientShortSerializer(
+        source='recipeingredient', many=True)
+    image = Base64ImageField()
+    author = UserSerializer(
+        read_only=True, default=serializers.CurrentUserDefault())
+    is_favorited = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Recipe
+        fields = (
+            'id', 'tags', 'author', 'ingredients',
+            'is_favorited', 'is_in_shopping_cart',
+            'name', 'image', 'text', 'cooking_time',
+        )
+
+    def get_is_favorited(self, obj):
+        ...
+
+    def get_is_in_shopping_cart(self, obj):
+        ...
+
+    def set_recipe_ingredient(self, recipe, ingredients):
+        recipe_ingredient = [
+            RecipeIngredient(
+                recipe=recipe,
+                ingredient=ingredient['ingredient'],
+                amount=ingredient['amount'],
+            )
+            for ingredient in ingredients
+        ]
+        RecipeIngredient.objects.bulk_create(recipe_ingredient)
 
     def create(self, validated_data):
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('recipeingredient')
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
-        self.set_recipe_ingredients(recipe, ingredients)
+        self.set_recipe_ingredient(recipe, ingredients)
         return recipe
+
+    def update(self, instance, validated_data):
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('recipeingredient')
+        instance.ingredients.clear()
+        instance.tags.clear()
+        super().update(instance, validated_data)
+        instance.tags.set(tags)
+        self.set_recipe_ingredient(instance, ingredients)
+        return instance
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        tag_list = []
+        for tag_id in data['tags']:
+            tag = get_object_or_404(Tag, id=tag_id)
+            tag_list.append(TagSerializer(tag).data)
+        data['tags'] = tag_list
+        return data

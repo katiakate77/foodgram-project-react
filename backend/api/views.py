@@ -100,25 +100,25 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def perform_update(self, serializer):
         serializer.save(author=self.request.user)
 
-    @action(
-        detail=True,
-        methods=('post', 'delete'),
-        serializer_class=...,
-    )
-    def favorite(self, request):
-        ...
+    # @action(
+    #     detail=True,
+    #     methods=('post', 'delete'),
+    #     serializer_class=...,
+    # )
+    # def favorite(self, request):
+    #     ...
 
-    @action(
-        detail=True,
-        methods=('post', 'delete'),
-        serializer_class=...,
-    )
-    def shopping_cart(self, request):
-        ...
+    # @action(
+    #     detail=True,
+    #     methods=('post', 'delete'),
+    #     serializer_class=...,
+    # )
+    # def shopping_cart(self, request):
+    #     ...
 
-    @action(
-        detail=False,
-        serializer_class=...,
-    )
-    def download_shopping_cart(self, request):
-        ...
+    # @action(
+    #     detail=False,
+    #     serializer_class=...,
+    # )
+    # def download_shopping_cart(self, request):
+    #     ...
