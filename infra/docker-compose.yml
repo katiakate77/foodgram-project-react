@@ -1,9 +1,5 @@
 version: '3.3'
-
-volumes:
-  pg_data:
-  static:
-  media:
+name: foodgram
 
 services:
   db:
@@ -48,3 +44,8 @@ services:
       - ../docs/:/usr/share/nginx/html/api/docs/
     depends_on:
       - frontend
+
+volumes:
+  pg_data:
+  static:
+  media:

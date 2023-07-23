@@ -1,4 +1,5 @@
 import base64
+import mimetypes
 
 from django.core.files.base import ContentFile
 from djoser.serializers import SetPasswordSerializer
@@ -123,3 +124,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def get_is_in_shopping_cart(self, obj):
         ...
+
+
+class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
+    pass

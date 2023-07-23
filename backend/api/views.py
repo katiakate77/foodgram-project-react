@@ -1,10 +1,11 @@
+from django.db.models import Count
 from rest_framework import mixins, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from api.serializers import (
     UserSerializer, UserCreateSerializer, ResetPasswordSerializer,
-    SubscriptionSerializer,
+    SubscriptionSerializer, RecipeSerializer, RecipeCreateUpdateSerializer,
     TagSerializer, IngredientSerializer, RecipeIngredientSerializer
     )
 
@@ -55,7 +56,7 @@ class UserViewSet(ListCreateRetrieveViewSet):
 
     @action(
         detail=False,
-        # permission_classes=(permissions.IsAuthenticated,)
+        permission_classes=(permissions.IsAuthenticated,)
     )
     def subscriptions(self, request):
         ...
@@ -82,6 +83,16 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     http_method_names = ('get', 'post', 'patch', 'delete')
     queryset = Recipe.objects.all()
+
+    def get_serializer_class(self):
+        if self.action in ('list', 'retrieve'):
+            return RecipeSerializer
+        return RecipeCreateUpdateSerializer
+
+    def get_permissions(self):
+        if self.action not in ('list', 'retrieve'):
+            return (permissions.IsAuthenticated(),)
+        return super().get_permissions()
 
     @action(
         detail=True,
