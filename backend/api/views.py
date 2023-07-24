@@ -60,7 +60,12 @@ class UserViewSet(ListCreateRetrieveViewSet):
         permission_classes=(permissions.IsAuthenticated,)
     )
     def subscriptions(self, request):
-        ...
+        queryset = User.objects.filter(following__user=request.user)
+        page = self.paginate_queryset(queryset)
+        serializer = SubscriptionSerializer(
+            page, many=True, context={'request': request}
+        )
+        return self.get_paginated_response(serializer.data)
 
     @action(
         detail=True,
@@ -87,6 +92,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     http_method_names = ('get', 'post', 'patch', 'delete')
     queryset = Recipe.objects.all()
     permission_classes = (AccessOrReadOnly,)
+    search_fields = ('^ingredients__name',)
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):

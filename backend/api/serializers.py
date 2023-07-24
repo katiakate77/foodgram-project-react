@@ -55,9 +55,10 @@ class SubscriptionSerializer(UserSerializer):
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
 
-    class Meta:
-        model = User
-        fields = '__all__'
+    class Meta(UserSerializer.Meta):
+        fields = UserSerializer.Meta.fields + (
+            'recipes', 'recipes_count',
+        )
 
     def get_recipes(self, obj):
         ...
