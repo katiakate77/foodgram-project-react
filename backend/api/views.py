@@ -12,6 +12,7 @@ from api.serializers import (
 from api.mixins import ListCreateRetrieveViewSet
 from recipes.models import Recipe, Tag, Ingredient
 from users.models import User
+from api.permissions import AccessOrReadOnly
 
 
 class UserViewSet(ListCreateRetrieveViewSet):
@@ -79,22 +80,18 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
+    pagination_class = None
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
     http_method_names = ('get', 'post', 'patch', 'delete')
     queryset = Recipe.objects.all()
+    permission_classes = (AccessOrReadOnly,)
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
             return RecipeSerializer
         return RecipeCreateUpdateSerializer
-
-    def get_permissions(self):
-        # редактирование - автор рецепта!
-        if self.action not in ('list', 'retrieve'):
-            return (permissions.IsAuthenticated(),)
-        return super().get_permissions()
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
