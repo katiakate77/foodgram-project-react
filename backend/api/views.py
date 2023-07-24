@@ -91,6 +91,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return RecipeCreateUpdateSerializer
 
     def get_permissions(self):
+        # редактирование - автор рецепта!
         if self.action not in ('list', 'retrieve'):
             return (permissions.IsAuthenticated(),)
         return super().get_permissions()

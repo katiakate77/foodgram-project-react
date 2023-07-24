@@ -145,30 +145,13 @@ class RecipeSerializer(serializers.ModelSerializer):
         ...
 
 
-class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
+class RecipeCreateUpdateSerializer(RecipeSerializer):
     tags = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Tag.objects.all())
     ingredients = RecipeIngredientShortSerializer(
         source='recipeingredient', many=True)
-    image = Base64ImageField()
     author = UserSerializer(
         read_only=True, default=serializers.CurrentUserDefault())
-    is_favorited = serializers.SerializerMethodField()
-    is_in_shopping_cart = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Recipe
-        fields = (
-            'id', 'tags', 'author', 'ingredients',
-            'is_favorited', 'is_in_shopping_cart',
-            'name', 'image', 'text', 'cooking_time',
-        )
-
-    def get_is_favorited(self, obj):
-        ...
-
-    def get_is_in_shopping_cart(self, obj):
-        ...
 
     def set_recipe_ingredient(self, recipe, ingredients):
         recipe_ingredient = [
