@@ -2,6 +2,7 @@ from django.db.models import Count
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 
 from api.serializers import (
     UserSerializer, UserCreateSerializer, ResetPasswordSerializer,
@@ -11,7 +12,7 @@ from api.serializers import (
 
 from api.mixins import ListCreateRetrieveViewSet
 from recipes.models import Recipe, Tag, Ingredient
-from users.models import User
+from users.models import User, Follow
 from api.permissions import AccessOrReadOnly
 from api.filters import IngredientFilter
 
@@ -61,7 +62,9 @@ class UserViewSet(ListCreateRetrieveViewSet):
         permission_classes=(permissions.IsAuthenticated,)
     )
     def subscriptions(self, request):
-        queryset = User.objects.filter(following__user=request.user)
+        queryset = (User.objects.filter(following__user=request.user)
+                    .annotate(recipes_count=Count('recipes'))
+                    )
         page = self.paginate_queryset(queryset)
         serializer = SubscriptionSerializer(
             page, many=True, context={'request': request}
@@ -71,9 +74,9 @@ class UserViewSet(ListCreateRetrieveViewSet):
     @action(
         detail=True,
         methods=('post', 'delete'),
-        serializer_class=...,
+        permission_classes=(permissions.IsAuthenticated,)
     )
-    def subscribe(self, request):
+    def subscribe(self, request, pk):
         ...
 
 

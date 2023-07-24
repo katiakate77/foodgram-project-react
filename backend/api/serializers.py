@@ -53,7 +53,7 @@ class ResetPasswordSerializer(SetPasswordSerializer):
 
 class SubscriptionSerializer(UserSerializer):
     recipes = serializers.SerializerMethodField()
-    recipes_count = serializers.SerializerMethodField()
+    recipes_count = serializers.IntegerField()
 
     class Meta(UserSerializer.Meta):
         fields = UserSerializer.Meta.fields + (
@@ -61,10 +61,12 @@ class SubscriptionSerializer(UserSerializer):
         )
 
     def get_recipes(self, obj):
-        ...
-
-    def get_recipes_count(self, obj):
-        ...
+        recipes_limit = self.context['request'].GET.get('recipes_limit')
+        recipes = obj.recipes.all()
+        if recipes_limit:
+            recipes = recipes[:int(recipes_limit)]
+        serializer = RecipeShortSerializer(recipes, many=True, read_only=True)
+        return serializer.data
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -191,3 +193,10 @@ class RecipeCreateUpdateSerializer(RecipeSerializer):
             tag_list.append(TagSerializer(tag).data)
         data['tags'] = tag_list
         return data
+
+
+class RecipeShortSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time')
