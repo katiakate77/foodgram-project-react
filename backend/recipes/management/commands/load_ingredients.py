@@ -12,7 +12,9 @@ class Command(BaseCommand):
     help = 'Загрузка списка ингредиентов в БД'
 
     def handle(self, *args, **options):
-        file_path = Path(BASE_DIR).parent / 'data' / 'ingredients.csv'
+        # for local development
+        # file_path = Path(BASE_DIR).parent / 'data' / 'ingredients.csv'
+        file_path = Path(BASE_DIR) / 'ingredients.csv'
         if Ingredient.objects.exists():
             raise Exception('Данные уже загружены')
         with open(file_path, encoding='utf-8') as csv_file:
@@ -20,7 +22,7 @@ class Command(BaseCommand):
                 Ingredient(
                     name=row[0],
                     measurement_unit=row[1]
-                    )
+                )
                 for row in csv.reader(csv_file)
             ]
             Ingredient.objects.bulk_create(ingredients)
