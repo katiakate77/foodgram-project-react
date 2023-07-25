@@ -24,8 +24,8 @@ class UserSerializer(serializers.ModelSerializer):
     def get_is_subscribed(self, obj):
         user = self.context.get('request').user
         return (
-            user.is_authenticated and
-            obj.following.filter(user=user).exists()
+            user.is_authenticated
+            and obj.following.filter(user=user).exists()
         )
 
 
