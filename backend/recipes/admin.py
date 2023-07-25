@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from recipes.models import (
     Ingredient, Tag, Recipe, RecipeIngredient, FavoriteRecipe, ShoppingCart
-    )
+)
 
 
 @admin.register(Ingredient)

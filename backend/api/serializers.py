@@ -53,12 +53,14 @@ class ResetPasswordSerializer(SetPasswordSerializer):
 
 class SubscriptionSerializer(UserSerializer):
     recipes = serializers.SerializerMethodField()
-    recipes_count = serializers.IntegerField()
+    # recipes_count = serializers.IntegerField()
+    recipes_count = serializers.SerializerMethodField()
 
     class Meta(UserSerializer.Meta):
         fields = UserSerializer.Meta.fields + (
             'recipes', 'recipes_count',
         )
+        read_only_fields = ('email', 'username', 'first_name', 'last_name')
 
     def get_recipes(self, obj):
         recipes_limit = self.context['request'].GET.get('recipes_limit')
@@ -67,6 +69,25 @@ class SubscriptionSerializer(UserSerializer):
             recipes = recipes[:int(recipes_limit)]
         serializer = RecipeShortSerializer(recipes, many=True, read_only=True)
         return serializer.data
+
+    def get_recipes_count(self, obj):
+        return obj.recipes.count()
+
+    def validate(self, data):
+        if self.context['request'].method != 'POST':
+            return data
+        user = self.context['request'].user
+        author_id = self.context['request'].parser_context['kwargs']['pk']
+        author = get_object_or_404(User, id=author_id)
+        if user.follower.filter(author=author_id).exists():
+            raise serializers.ValidationError(
+                'Подписка уже существует'
+            )
+        if user == author:
+            raise serializers.ValidationError(
+                'Нельзя подписаться на самого себя'
+            )
+        return data
 
 
 class TagSerializer(serializers.ModelSerializer):

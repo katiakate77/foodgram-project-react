@@ -62,9 +62,10 @@ class UserViewSet(ListCreateRetrieveViewSet):
         permission_classes=(permissions.IsAuthenticated,)
     )
     def subscriptions(self, request):
-        queryset = (User.objects.filter(following__user=request.user)
-                    .annotate(recipes_count=Count('recipes'))
-                    )
+        # queryset = (User.objects.filter(following__user=request.user)
+        #             .annotate(recipes_count=Count('recipes'))
+        #             )
+        queryset = User.objects.filter(following__user=request.user)
         page = self.paginate_queryset(queryset)
         serializer = SubscriptionSerializer(
             page, many=True, context={'request': request}
@@ -77,7 +78,25 @@ class UserViewSet(ListCreateRetrieveViewSet):
         permission_classes=(permissions.IsAuthenticated,)
     )
     def subscribe(self, request, pk):
-        ...
+        user = request.user
+        author = get_object_or_404(User, id=pk)
+        if request.method == 'POST':
+            serializer = SubscriptionSerializer(
+                author, data=request.data, context={'request': request}
+            )
+            if serializer.is_valid(raise_exception=True):
+                Follow.objects.create(user=user, author=author)
+            print(serializer.data)
+            return Response(serializer.data,
+                            status=status.HTTP_201_CREATED)
+        if request.method == 'DELETE':
+            if not Follow.objects.filter(user=user, author=author).exists():
+                return Response(
+                    {'error': 'Вы не были подписаны на данного пользователя'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            get_object_or_404(Follow, user=user, author=author).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
