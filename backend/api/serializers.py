@@ -185,26 +185,26 @@ class RecipeCreateUpdateSerializer(RecipeSerializer):
     author = UserSerializer(
         read_only=True, default=serializers.CurrentUserDefault())
 
-    def validate(self, data):
-        tags = self.data.get('tags')
-        ingredients = self.data.get('ingredients')
-        if not tags:
-            raise serializers.ValidationError(
-                'Минимум один тег.'
-            )
-        if not ingredients:
-            raise serializers.ValidationError(
-                'Минимум один ингредиент.'
-            )
-        if len(tags) > len(set(tags)):
-            raise serializers.ValidationError(
-                'Один и тот же тег добавлен несколько раз.'
-            )
-        if len(ingredients) > len(set(ingredients)):
-            raise serializers.ValidationError(
-                'Один и тот же ингредиент добавлен несколько раз.'
-            )
-        return data
+    # def validate(self, data):
+    #     tags = self.data.get('tags')
+    #     ingredients = self.data.get('ingredients')
+    #     if not tags:
+    #         raise serializers.ValidationError(
+    #             'Минимум один тег.'
+    #         )
+    #     if not ingredients:
+    #         raise serializers.ValidationError(
+    #             'Минимум один ингредиент.'
+    #         )
+    #     if len(tags) > len(set(tags)):
+    #         raise serializers.ValidationError(
+    #             'Один и тот же тег добавлен несколько раз.'
+    #         )
+    #     if len(ingredients) > len(set(ingredients)):
+    #         raise serializers.ValidationError(
+    #             'Один и тот же ингредиент добавлен несколько раз.'
+    #         )
+    #     return data
 
     def set_recipe_ingredient(self, recipe, ingredients):
         recipe_ingredient = [
