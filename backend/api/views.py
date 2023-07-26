@@ -162,7 +162,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         detail=True,
         methods=('post', 'delete')
     )
-    def shopping_cart(self, request):
+    def shopping_cart(self, request, pk):
         return self.favorite_or_shopping_cart(request, ShoppingCart, pk)
 
     @action(
