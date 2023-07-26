@@ -1,13 +1,11 @@
 import base64
-import mimetypes
-
-from django.shortcuts import get_object_or_404
 
 from django.core.files.base import ContentFile
+from django.shortcuts import get_object_or_404
 from djoser.serializers import SetPasswordSerializer
 from rest_framework import serializers
 
-from recipes.models import Ingredient, Tag, Recipe, RecipeIngredient
+from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
 from users.models import User
 
 
@@ -184,27 +182,6 @@ class RecipeCreateUpdateSerializer(RecipeSerializer):
         source='recipeingredient', many=True)
     author = UserSerializer(
         read_only=True, default=serializers.CurrentUserDefault())
-
-    # def validate(self, data):
-    #     tags = self.data.get('tags')
-    #     ingredients = self.data.get('ingredients')
-    #     if not tags:
-    #         raise serializers.ValidationError(
-    #             'Минимум один тег.'
-    #         )
-    #     if not ingredients:
-    #         raise serializers.ValidationError(
-    #             'Минимум один ингредиент.'
-    #         )
-    #     if len(tags) > len(set(tags)):
-    #         raise serializers.ValidationError(
-    #             'Один и тот же тег добавлен несколько раз.'
-    #         )
-    #     if len(ingredients) > len(set(ingredients)):
-    #         raise serializers.ValidationError(
-    #             'Один и тот же ингредиент добавлен несколько раз.'
-    #         )
-    #     return data
 
     def set_recipe_ingredient(self, recipe, ingredients):
         recipe_ingredient = [

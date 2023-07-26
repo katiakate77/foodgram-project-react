@@ -1,25 +1,26 @@
 # from django.db.models import Count
 from django.db.models import Sum
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from api.serializers import (
-    UserSerializer, UserCreateSerializer, ResetPasswordSerializer,
-    RecipeSerializer, RecipeCreateUpdateSerializer,
-    TagSerializer, IngredientSerializer,
-    SubscriptionSerializer, RecipeShortSerializer
-)
-
-from api.mixins import ListCreateRetrieveViewSet
-from recipes.models import (
-    Recipe, Tag, Ingredient, FavoriteRecipe, ShoppingCart, RecipeIngredient
-)
-from users.models import User, Follow
-from api.permissions import AccessOrReadOnly
 from api.filters import IngredientFilter
+from api.mixins import ListCreateRetrieveViewSet
+from api.permissions import AccessOrReadOnly
+from api.serializers import (
+    IngredientSerializer, RecipeCreateUpdateSerializer, RecipeSerializer,
+    RecipeShortSerializer, ResetPasswordSerializer,
+    SubscriptionSerializer, TagSerializer,
+    UserCreateSerializer, UserSerializer
+)
+from recipes.models import (
+    FavoriteRecipe, Ingredient, Recipe,
+    RecipeIngredient, ShoppingCart, Tag
+)
+from users.models import Follow, User
 
 
 class UserViewSet(ListCreateRetrieveViewSet):
@@ -155,14 +156,16 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=True,
-        methods=('post', 'delete')
+        methods=('post', 'delete'),
+        permission_classes=(permissions.IsAuthenticated,),
     )
     def favorite(self, request, pk):
         return self.favorite_or_shopping_cart(request, FavoriteRecipe, pk)
 
     @action(
         detail=True,
-        methods=('post', 'delete')
+        methods=('post', 'delete'),
+        permission_classes=(permissions.IsAuthenticated,),
     )
     def shopping_cart(self, request, pk):
         return self.favorite_or_shopping_cart(request, ShoppingCart, pk)
@@ -183,7 +186,26 @@ class RecipeViewSet(viewsets.ModelViewSet):
         total_ingredients = ingredients.values(
             'ingredient__name', 'ingredient__measurement_unit').order_by(
             'ingredient__name').annotate(amount=Sum('amount'))
+        return make_file(
+            ('Наименование', 'Единица измерения', 'Количество'),
+            total_ingredients, 'shopping_cart.txt', status.HTTP_200_OK)
 
-        return make_pdf(
-            ('Наименование', 'Количество', 'Единица измерения'),
-            total_ingredients, 'shopping_cart.pdf', status.HTTP_200_OK)
+
+def make_file(header, data, filename, http_status):
+    product_list = []
+    for ingredient in data:
+        product_list.append(
+            '{name} ({unit}) - {amount}'.format(
+                name=ingredient['ingredient__name'],
+                unit=ingredient['ingredient__measurement_unit'],
+                amount=ingredient['amount']
+            )
+        )
+    response = HttpResponse(
+        content='\n'.join(product_list),
+        content_type='text/plain',
+        status=http_status
+    )
+    response['Content-Disposition'] = (
+        f'attachment; filename={filename}')
+    return response
