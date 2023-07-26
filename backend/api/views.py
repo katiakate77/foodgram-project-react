@@ -1,8 +1,10 @@
-from django.db.models import Count
+# from django.db.models import Count
+from django.db.models import Sum
+from django.shortcuts import get_object_or_404
+
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
 
 from api.serializers import (
     UserSerializer, UserCreateSerializer, ResetPasswordSerializer,
@@ -13,7 +15,7 @@ from api.serializers import (
 
 from api.mixins import ListCreateRetrieveViewSet
 from recipes.models import (
-    Recipe, Tag, Ingredient, FavoriteRecipe, ShoppingCart
+    Recipe, Tag, Ingredient, FavoriteRecipe, ShoppingCart, RecipeIngredient
 )
 from users.models import User, Follow
 from api.permissions import AccessOrReadOnly
@@ -167,7 +169,21 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=False,
-        serializer_class=...,
+        permission_classes=(permissions.IsAuthenticated,),
     )
     def download_shopping_cart(self, request):
-        ...
+        recipes = request.user.shoppingcart.all().values('recipe__id')
+        ingredients = RecipeIngredient.objects.filter(recipe__in=recipes)
+
+        if not ingredients:
+            return Response(
+                {'errors': 'Список покупок пустой'},
+                status=status.HTTP_204_NO_CONTENT
+            )
+        total_ingredients = ingredients.values(
+            'ingredient__name', 'ingredient__measurement_unit').order_by(
+            'ingredient__name').annotate(amount=Sum('amount'))
+
+        return make_pdf(
+            ('Наименование', 'Количество', 'Единица измерения'),
+            total_ingredients, 'shopping_cart.pdf', status.HTTP_200_OK)
