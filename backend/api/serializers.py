@@ -51,7 +51,6 @@ class ResetPasswordSerializer(SetPasswordSerializer):
 
 class SubscriptionSerializer(UserSerializer):
     recipes = serializers.SerializerMethodField()
-    # recipes_count = serializers.IntegerField()
     recipes_count = serializers.SerializerMethodField()
 
     class Meta(UserSerializer.Meta):

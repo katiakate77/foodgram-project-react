@@ -68,9 +68,6 @@ class UserViewSet(ListCreateRetrieveViewSet):
         permission_classes=(permissions.IsAuthenticated,)
     )
     def subscriptions(self, request):
-        # queryset = (User.objects.filter(following__user=request.user)
-        #             .annotate(recipes_count=Count('recipes'))
-        #             )
         queryset = User.objects.filter(following__user=request.user)
         page = self.paginate_queryset(queryset)
         serializer = SubscriptionSerializer(
