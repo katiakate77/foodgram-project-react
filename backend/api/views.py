@@ -1,4 +1,3 @@
-# from django.db.models import Count
 from django.db.models import Sum
 from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
@@ -55,14 +54,13 @@ class UserViewSet(ListCreateRetrieveViewSet):
     )
     def set_password(self, request):
         serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            new_password = serializer.validated_data.get('new_password')
-            self.request.user.set_password(new_password)
-            self.request.user.save()
-            return Response(
-                {'status': 'password set'}, status=status.HTTP_204_NO_CONTENT
-            )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        new_password = serializer.validated_data.get('new_password')
+        self.request.user.set_password(new_password)
+        self.request.user.save()
+        return Response(
+            {'status': 'password set'}, status=status.HTTP_204_NO_CONTENT
+        )
 
     @action(
         detail=False,
@@ -84,14 +82,6 @@ class UserViewSet(ListCreateRetrieveViewSet):
     def subscribe(self, request, pk):
         user = request.user
         author = get_object_or_404(User, id=pk)
-        if request.method == 'POST':
-            serializer = SubscriptionSerializer(
-                author, data=request.data, context={'request': request}
-            )
-            if serializer.is_valid(raise_exception=True):
-                Follow.objects.create(user=user, author=author)
-            return Response(serializer.data,
-                            status=status.HTTP_201_CREATED)
         if request.method == 'DELETE':
             if not Follow.objects.filter(user=user, author=author).exists():
                 return Response(
@@ -100,6 +90,13 @@ class UserViewSet(ListCreateRetrieveViewSet):
                 )
             get_object_or_404(Follow, user=user, author=author).delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
+        serializer = SubscriptionSerializer(
+            author, data=request.data, context={'request': request}
+        )
+        if serializer.is_valid(raise_exception=True):
+            Follow.objects.create(user=user, author=author)
+        return Response(serializer.data,
+                        status=status.HTTP_201_CREATED)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -137,14 +134,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def favorite_or_shopping_cart(self, request, model, pk):
         user = request.user
         recipe = get_object_or_404(Recipe, id=pk)
-        if request.method == 'POST':
-            serializer = RecipeShortSerializer(
-                recipe, data=request.data, context={'request': request}
-            )
-            if serializer.is_valid(raise_exception=True):
-                model.objects.create(user=user, recipe=recipe)
-            return Response(serializer.data,
-                            status=status.HTTP_201_CREATED)
         if request.method == 'DELETE':
             if not model.objects.filter(user=user, recipe=recipe).exists():
                 return Response(
@@ -153,6 +142,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 )
             get_object_or_404(model, user=user, recipe=recipe).delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
+        serializer = RecipeShortSerializer(
+            recipe, data=request.data, context={'request': request}
+        )
+        if serializer.is_valid(raise_exception=True):
+            model.objects.create(user=user, recipe=recipe)
+        return Response(serializer.data,
+                        status=status.HTTP_201_CREATED)
 
     @action(
         detail=True,
