@@ -2,7 +2,7 @@
 from django_filters import rest_framework as django_filters
 from rest_framework.filters import SearchFilter
 
-from recipes.models import Recipe
+# from recipes.models import Recipe
 
 
 class IngredientFilter(SearchFilter):
@@ -51,4 +51,3 @@ class RecipeFilter(django_filters.FilterSet):
     # class Meta:
     #     model = Recipe
     #     fields = ('author',)
-    
