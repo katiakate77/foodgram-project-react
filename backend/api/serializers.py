@@ -128,16 +128,13 @@ class RecipeIngredientShortSerializer(serializers.ModelSerializer):
 
     id = serializers.PrimaryKeyRelatedField(
         source='ingredient', queryset=Ingredient.objects.all())
+    name = serializers.ReadOnlyField(source='ingredient.name')
+    measurement_unit = serializers.ReadOnlyField(
+        source='ingredient.measurement_unit')
 
     class Meta:
         model = RecipeIngredient
-        fields = ('id', 'amount')
-
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        data['name'] = instance.ingredient.name
-        data['measurement_unit'] = instance.ingredient.measurement_unit
-        return data
+        fields = ('id', 'name', 'measurement_unit', 'amount')
 
 
 class RecipeSerializer(serializers.ModelSerializer):
