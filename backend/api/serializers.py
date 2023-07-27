@@ -1,5 +1,6 @@
 import base64
 
+from django.conf import settings
 from django.core.files.base import ContentFile
 from django.shortcuts import get_object_or_404
 from djoser.serializers import SetPasswordSerializer
@@ -64,6 +65,8 @@ class SubscriptionSerializer(UserSerializer):
         recipes = obj.recipes.all()
         if recipes_limit:
             recipes = recipes[:int(recipes_limit)]
+        else:
+            recipes = recipes[:int(settings.RECIPES_LIMIT)]
         serializer = RecipeShortSerializer(recipes, many=True, read_only=True)
         return serializer.data
 
