@@ -1,13 +1,14 @@
 # from django.db.models import Count
 from django.db.models import Sum
 from django.http import HttpResponse
+from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from api.filters import IngredientFilter
+from api.filters import IngredientFilter, RecipeFilter
 from api.mixins import ListCreateRetrieveViewSet
 from api.permissions import AccessOrReadOnly
 from api.serializers import (
@@ -119,6 +120,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     http_method_names = ('get', 'post', 'patch', 'delete')
     queryset = Recipe.objects.all()
     permission_classes = (AccessOrReadOnly,)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = RecipeFilter
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
@@ -184,11 +187,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
             'ingredient__name', 'ingredient__measurement_unit').order_by(
             'ingredient__name').annotate(amount=Sum('amount'))
         return make_file(
-            ('Наименование', 'Единица измерения', 'Количество'),
-            total_ingredients, 'shopping_cart.txt', status.HTTP_200_OK)
+            total_ingredients, 'shopping_cart.txt', status.HTTP_200_OK
+        )
 
 
-def make_file(header, data, filename, http_status):
+def make_file(data, filename, http_status):
     product_list = []
     for ingredient in data:
         product_list.append(
