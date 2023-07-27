@@ -1,5 +1,4 @@
 from django.db.models import Sum
-from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 
@@ -16,6 +15,7 @@ from api.serializers import (
     SubscriptionSerializer, TagSerializer,
     UserCreateSerializer, UserSerializer
 )
+from api.utils import make_file
 from recipes.models import (
     FavoriteRecipe, Ingredient, Recipe,
     RecipeIngredient, ShoppingCart, Tag
@@ -185,23 +185,3 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return make_file(
             total_ingredients, 'shopping_cart.txt', status.HTTP_200_OK
         )
-
-
-def make_file(data, filename, http_status):
-    product_list = []
-    for ingredient in data:
-        product_list.append(
-            '{name} ({unit}) - {amount}'.format(
-                name=ingredient['ingredient__name'],
-                unit=ingredient['ingredient__measurement_unit'],
-                amount=ingredient['amount']
-            )
-        )
-    response = HttpResponse(
-        content='\n'.join(product_list),
-        content_type='text/plain',
-        status=http_status
-    )
-    response['Content-Disposition'] = (
-        f'attachment; filename={filename}')
-    return response
