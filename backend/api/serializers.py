@@ -1,11 +1,9 @@
-import base64
-
 from django.conf import settings
-from django.core.files.base import ContentFile
 from django.shortcuts import get_object_or_404
 from djoser.serializers import SetPasswordSerializer
 from rest_framework import serializers
 
+from api.fields import Base64ImageField
 from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
 from users.models import User
 
@@ -140,17 +138,6 @@ class RecipeIngredientShortSerializer(serializers.ModelSerializer):
         data['name'] = instance.ingredient.name
         data['measurement_unit'] = instance.ingredient.measurement_unit
         return data
-
-
-class Base64ImageField(serializers.ImageField):
-    def to_internal_value(self, data):
-        if isinstance(data, str) and data.startswith('data:image'):
-            format, imgstr = data.split(';base64,')
-            ext = format.split('/')[-1]
-
-            data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
-
-        return super().to_internal_value(data)
 
 
 class RecipeSerializer(serializers.ModelSerializer):
