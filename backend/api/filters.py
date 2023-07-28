@@ -10,7 +10,6 @@ class IngredientFilter(SearchFilter):
 
 
 class RecipeFilter(django_filters.FilterSet):
-    # ...
     tags = django_filters.CharFilter(
         field_name='tags__slug', method='filter_tags', lookup_expr='in'
     )
