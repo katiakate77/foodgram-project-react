@@ -17,8 +17,6 @@ class Command(BaseCommand):
     help = 'Загрузка списка ингредиентов в БД'
 
     def handle(self, *args, **options):
-        # for local development
-        # file_path = Path(BASE_DIR).parent / 'data' / 'ingredients.csv'
         file_path = Path(BASE_DIR) / 'ingredients.csv'
         if Ingredient.objects.exists():
             raise DataIsLoaded('Данные уже загружены')
