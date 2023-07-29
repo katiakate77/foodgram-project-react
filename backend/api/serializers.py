@@ -59,12 +59,10 @@ class SubscriptionSerializer(UserSerializer):
         read_only_fields = ('email', 'username', 'first_name', 'last_name')
 
     def get_recipes(self, obj):
-        recipes_limit = self.context['request'].GET.get('recipes_limit')
-        recipes = obj.recipes.all()
-        if recipes_limit:
-            recipes = recipes[:int(recipes_limit)]
-        else:
-            recipes = recipes[:int(settings.RECIPES_LIMIT)]
+        recipes_limit = self.context['request'].GET.get(
+            'recipes_limit', settings.RECIPES_LIMIT
+        )
+        recipes = obj.recipes.all()[:int(recipes_limit)]
         serializer = RecipeShortSerializer(recipes, many=True, read_only=True)
         return serializer.data
 
