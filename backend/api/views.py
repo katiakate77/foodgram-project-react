@@ -93,8 +93,8 @@ class UserViewSet(ListCreateRetrieveViewSet):
         serializer = SubscriptionSerializer(
             author, data=request.data, context={'request': request}
         )
-        if serializer.is_valid(raise_exception=True):
-            Follow.objects.create(user=user, author=author)
+        serializer.is_valid(raise_exception=True)
+        Follow.objects.create(user=user, author=author)
         return Response(serializer.data,
                         status=status.HTTP_201_CREATED)
 
@@ -145,8 +145,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         serializer = RecipeShortSerializer(
             recipe, data=request.data, context={'request': request}
         )
-        if serializer.is_valid(raise_exception=True):
-            model.objects.create(user=user, recipe=recipe)
+        serializer.is_valid(raise_exception=True)
+        model.objects.create(user=user, recipe=recipe)
         return Response(serializer.data,
                         status=status.HTTP_201_CREATED)
 
