@@ -42,7 +42,9 @@ SECRET_KEY=
 ALLOWED_HOSTS=
 DEBUG=
 ```
-Из директории infra/ выполнить: `docker compose up --build`.
+
+Собрать образы и запустить контейнеры Docker: из директории infra/ выполнить: `docker compose up --build`.
+Применить миграции, собрать статику, создать суперпользователя.
 
 ### Информация
 
