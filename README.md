@@ -9,7 +9,8 @@
 
 ### Стек технологий
 
-* Frontend проекта написан на `React` (Javascript), backend - на `Django` (Python). Frontend и backend взаимодействуют через API (Реализовано через `Django Rest Framework`).
+* Frontend проекта написан на `React` (Javascript), backend - на `Django` (Python).
+* Frontend и backend взаимодействуют через API (реализовано через `Django Rest Framework`).
 * При развертывании проекта использован веб-сервер `nginx`, WSGI-сервер `Gunicorn` и `Docker`.
 * Проект использует базу данных PostgreSQL.
 * Настроено `CI/CD`.
