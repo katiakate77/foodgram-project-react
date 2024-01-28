@@ -45,5 +45,5 @@ DEBUG=
 
 ### Информация
 
-* Проект доступен по адресу: https://yandextaski.ddns.net/
+* Проект доступен по адресу: https://yandextaski.ddns.net/.
 
