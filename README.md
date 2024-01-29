@@ -43,15 +43,30 @@ ALLOWED_HOSTS=127.0.0.1,localhost
 DEBUG=
 ```
 
-* Собрать образы и запустить контейнеры Docker: из директории infra/ выполнить:
+* Собрать образы и запустить контейнеры Docker. Из директории infra/ выполнить:
 
 ```
 docker compose up --build
 ```
 
-* Применить миграции: `docker compose exec backend python manage.py migrate`.
-* Собрать статику: `docker compose exec backend python manage.py collectstatic`; `docker compose exec backend cp -r /app/collected_static/. /backend_static/`.
-* Cоздать суперпользователя: `docker compose exec backend python manage.py createsuperuser`.
+* Применить миграции:
+
+```
+docker compose exec backend python manage.py migrate
+```
+
+* Собрать статику:
+```
+docker compose exec backend python manage.py collectstatic
+```
+```docker compose exec backend cp -r /app/collected_static/. /backend_static/
+```
+
+* Cоздать суперпользователя:
+
+```
+docker compose exec backend python manage.py createsuperuser
+```
 
 * Документация будет доступна по адресу: http://localhost/api/docs/.
 
