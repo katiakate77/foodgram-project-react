@@ -69,6 +69,12 @@ docker compose exec backend cp -r /app/collected_static/. /backend_static/
 docker compose exec backend python manage.py createsuperuser
 ```
 
+* Загрузить данные в БД:
+
+```
+docker compose exec backend python manage.py load_ingredients
+```
+
 * Документация будет доступна по адресу: http://localhost/api/docs/.
 
 ### Информация
