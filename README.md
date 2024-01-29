@@ -75,8 +75,6 @@ docker compose exec backend python manage.py createsuperuser
 docker compose exec backend python manage.py load_ingredients
 ```
 
-* Документация будет доступна по адресу: http://localhost/api/docs/.
-
 ### Информация
 
 * Проект доступен по адресу: https://yandextaski.ddns.net/.
