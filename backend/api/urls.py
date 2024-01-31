@@ -1,5 +1,6 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
+from django.views.generic import TemplateView
 
 from api.views import TagViewSet, IngredientViewSet, RecipeViewSet, UserViewSet
 
@@ -15,4 +16,9 @@ app_name = 'api'
 urlpatterns = [
     path('', include(router_v1.urls)),
     path('auth/', include('djoser.urls.authtoken')),
+    path(
+        'docs/',
+        TemplateView.as_view(template_name='redoc.html'),
+        name='redoc'
+    ),
 ]
