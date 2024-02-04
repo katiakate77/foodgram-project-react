@@ -33,10 +33,10 @@ services:
     container_name: foodgram_nginx
     image: katiakate/foodgram_nginx
     ports:
-      - "8000:80"
+      - 8000:80
     volumes:
-      - ../frontend/build:/usr/share/nginx/html/
-      - ../docs/:/usr/share/nginx/html/api/docs/
+      - ./frontend/build:/usr/share/nginx/html/
+      - ./docs/:/usr/share/nginx/html/api/docs/
       - static:/var/html/static/
       - media:/var/html/media/
     depends_on:
