@@ -1,5 +1,10 @@
 # Foodgram - онлайн-сервис для публикации рецептов
 
+.. image::
+   https://github.com/katiakate77/foodgram-project-react/actions/workflows/main.yml/badge.svg?branch=master
+   :target: https://github.com/katiakate77/foodgram-project-react/actions/workflows/main.yml/badge.svg?branch=master
+   :alt: CI tests status
+
 ### О проекте
 
 На сайте «Фудграм» пользователи смогут публиковать рецепты, подписываться на публикации других пользователей, добавлять понравившиеся 
