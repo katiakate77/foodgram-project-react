@@ -1,9 +1,6 @@
 # Foodgram - онлайн-сервис для публикации рецептов
 
-.. image::
-   https://github.com/katiakate77/foodgram-project-react/actions/workflows/main.yml/badge.svg?branch=master
-   :target: https://github.com/katiakate77/foodgram-project-react/actions/workflows/main.yml/badge.svg?branch=master
-   :alt: CI tests status
+[![CI](https://github.com/katiakate77/foodgram-project-react/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/katiakate77/foodgram-project-react/actions/workflows/main.yml/badge.svg?branch=master)
 
 ### О проекте
 
