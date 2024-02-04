@@ -13,7 +13,7 @@
 * Frontend и backend взаимодействуют через API (реализовано через `Django Rest Framework`).
 * При развертывании проекта использован веб-сервер `nginx`, WSGI-сервер `Gunicorn` и `Docker`.
 * Проект использует базу данных PostgreSQL.
-* Настроено `CI/CD`.
+* Настроено `CI/CD` с помощью `GitHub Actions`.
 
 ### Конфигурация
 
