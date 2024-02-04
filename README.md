@@ -34,10 +34,9 @@
 Необходимо создать файл `.env` в директории `infra/`:
 
 ```
-POSTGRES_DB=
+POSTGRES_DB=<название БД>
 POSTGRES_USER=user
 POSTGRES_PASSWORD=password
-DB_NAME=
 DB_HOST=db
 DB_PORT=5432
 SECRET_KEY=
