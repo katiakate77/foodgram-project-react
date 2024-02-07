@@ -31,17 +31,19 @@
 
 ### Локальный запуск
 
-Необходимо создать файл `.env` в директории `infra/`:
+Необходимо создать файл `.env` в корне проекта:
 
 ```
+SECRET_KEY=
+ALLOWED_HOSTS=127.0.0.1,localhost
+DEBUG=
+
+# Database
 POSTGRES_DB=<название БД>
 POSTGRES_USER=user
 POSTGRES_PASSWORD=password
 DB_HOST=db
 DB_PORT=5432
-SECRET_KEY=
-ALLOWED_HOSTS=127.0.0.1,localhost
-DEBUG=
 ```
 
 * Собрать образы и запустить контейнеры Docker. Из директории `infra/` выполнить:
