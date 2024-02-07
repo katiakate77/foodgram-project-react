@@ -4,7 +4,7 @@ name: foodgram
 services:
   db:
     container_name: foodgram_db
-    image: postgres:13
+    image: postgres:13.10-alpine
     volumes:
       - pg_data:/var/lib/postgresql/data/
     env_file:
