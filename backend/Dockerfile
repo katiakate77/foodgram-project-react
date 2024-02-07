@@ -10,4 +10,4 @@ COPY . .
 
 # CMD ["gunicorn", "--bind", "0:8000", "foodgram_backend.wsgi"]
 RUN chmod +x /app/entrypoint.sh
-ENTRYPOINT ["/app/entrypoint.sh"]
+CMD ["/app/entrypoint.sh"]
