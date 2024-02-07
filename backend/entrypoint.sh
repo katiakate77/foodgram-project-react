@@ -2,7 +2,7 @@
 
 # Collect static files
 echo "Collect static files"
-python manage.py collectstatic
+python manage.py collectstatic --noinput
 
 # Copy static files
 echo "Copy static files"
