@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/bin/sh
 
 # Collect static files
 echo "Collect static files"
-python manage.py collectstatic --noinput
+python manage.py collectstatic
 
 # Copy static files
 echo "Copy static files"
